@@ -5,6 +5,7 @@ class Game
   def initialize
     @secret_word = select_word
     puts @secret_word
+    Hangman.new
   end
 
   protected
@@ -24,7 +25,37 @@ end
 
 
 
+
+
+# 
+class Hangman
+  def initialize
+    @stock = draw_stock
+  end
+
+  protected
+  
+  def draw_stock
+    print "     ____\n    |    |\n    |\n    |\n    |\n    |\n    |\n    |\n-----------\n"
+  end
+end
+
+  class Players
+    def initialize(name, role)
+      @name = name
+      @role = role
+    end
+  end
+
+  class PlayerGuess < Players
+    def initialize
+      super
+    end
+  end
+
+  class ComputerPlayer < Players
+  end
+
+
 puts "Hangman Initialized!"
 Game.new
-
-
