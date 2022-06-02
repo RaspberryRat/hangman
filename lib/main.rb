@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require "pry-byebug"
 
 # game logic class
 class Game
@@ -11,11 +12,14 @@ class Game
     game_turn
   end
 
+  attr_reader :secret_word
+
   def game_turn
     if @round_number == 6
-      puts game_over_loser
+      puts "game_over_loser"
     else
       guess = @player1.guess_letter
+      check_guess(guess)
     end
   end
 
@@ -31,6 +35,16 @@ class Game
     words = []
     File.open("dictionary.txt").readlines.each { |word| words.push(word) }
     words.sample.chomp
+  end
+
+  def check_guess(letter)
+    word = @secret_word
+    x = word.include?(letter)
+    if x == true
+      puts "Letter #{letter} is in #{word}" 
+    else
+      puts "Wrong, letter: #{letter} is not in #{word}"
+    end
   end
 end
 
