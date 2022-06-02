@@ -3,9 +3,20 @@
 # game logic class
 class Game
   def initialize
+    @round_number = 1
     @secret_word = select_word
     puts @secret_word
-    Hangman.new
+    @player1 = HumanPlayer.new(self)
+    Hangman.new(self)
+    game_turn
+  end
+
+  def game_turn
+    if @round_number == 6
+      puts game_over_loser
+    else
+      guess = @player1.guess_letter
+    end
   end
 
   protected
@@ -23,13 +34,10 @@ class Game
   end
 end
 
-
-
-
-
-# 
+# drawing methods for the gameboar
 class Hangman
-  def initialize
+  def initialize(game)
+    @game = game
     @board = {head: "O", body: " |", arms: "-|-", legs: "/ \\", empty: " "}
     @current_board = [@board[:head], @board[:body], @board[:arms], @board[:legs]]
     @stock = draw_stock
@@ -39,26 +47,38 @@ class Hangman
 
   def draw_stock
     print "     ____\n    |    |\n    |    #{@current_board[0]}\n    |   #{@current_board[2]}\n    |   #{@current_board[3]}\n    |\n    |\n    |    \n-----------\n"
-
-
   end
 end
 
-  class Players
-    def initialize(name, role)
-      @name = name
-      @role = role
-    end
+# humanplayer and computerplayer superclass
+class Players
+  def initialize(game)
+    @game = game
+  end
+end
+
+# methods for human player, the guesser
+class HumanPlayer < Players
+  def initialize(name)
+    super
+    puts "What is your name?"
+    @name = gets.chomp
   end
 
-  class PlayerGuess < Players
-    def initialize
-      super
+  def guess_letter
+    puts "Guess a letter\n"
+    guess = gets.chomp.downcase.strip
+    until guess.length == 1 && guess.match?(/[a-z]/)
+      puts "You can only enter a single letter"
+      guess = gets.chomp.downcase.strip
     end
+    guess
   end
+end
 
-  class ComputerPlayer < Players
-  end
+# methods for computer player
+class ComputerPlayer < Players
+end
 
 
 puts "Hangman Initialized!"
