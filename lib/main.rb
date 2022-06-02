@@ -30,13 +30,17 @@ end
 # 
 class Hangman
   def initialize
+    @board = {head: "O", body: " |", arms: "-|-", legs: "/ \\", empty: " "}
+    @current_board = [@board[:head], @board[:body], @board[:arms], @board[:legs]]
     @stock = draw_stock
   end
 
   protected
-  
+
   def draw_stock
-    print "     ____\n    |    |\n    |\n    |\n    |\n    |\n    |\n    |\n-----------\n"
+    print "     ____\n    |    |\n    |    #{@current_board[0]}\n    |   #{@current_board[2]}\n    |   #{@current_board[3]}\n    |\n    |\n    |    \n-----------\n"
+
+
   end
 end
 
