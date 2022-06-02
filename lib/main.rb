@@ -1,11 +1,30 @@
-puts "Hangman Initialized!"
+# frozen_string_literal: true
 
-dictionary = File.open("dictionary.txt", "r")
-while !dictionary.eof?
-  line = dictionary.readline
-  puts line
+# game logic class
+class Game
+  def initialize
+    @secret_word = select_word
+    puts @secret_word
+  end
+
+  protected
+
+  def read_secret_word
+    @secret_word
+  end
+
+  private
+
+  def select_word
+    words = []
+    File.open("dictionary.txt").readlines.each { |word| words.push(word) }
+    words.sample.chomp
+  end
 end
-puts dictionary.closed?
 
-dictionary.close
-puts dictionary.closed?
+
+
+puts "Hangman Initialized!"
+Game.new
+
+
