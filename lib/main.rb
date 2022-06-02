@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require "pry-byebug"
+require "pp"
 
 # game logic class
 class Game
@@ -12,8 +13,6 @@ class Game
     game_turn
   end
 
-  attr_reader :secret_word
-
   def game_turn
     if @round_number == 6
       puts "game_over_loser"
@@ -21,6 +20,10 @@ class Game
       guess = @player1.guess_letter
       check_guess(guess)
     end
+  end
+
+  def word_length
+    read_secret_word.length
   end
 
   protected
@@ -34,11 +37,15 @@ class Game
   def select_word
     words = []
     File.open("dictionary.txt").readlines.each { |word| words.push(word) }
-    words.sample.chomp
+    word = words.sample.chomp
+    until word.length < 12 && word.length > 5
+      word = words.sample.chomp
+    end
+    word
   end
 
   def check_guess(letter)
-    word = @secret_word
+    word = read_secret_word
     x = word.include?(letter)
     if x == true
       puts "Letter #{letter} is in #{word}" 
@@ -54,6 +61,8 @@ class Hangman
     @game = game
     @board = {head: "O", body: " |", arms: "-|-", legs: "/ \\", empty: " "}
     @current_board = [@board[:head], @board[:body], @board[:arms], @board[:legs]]
+    @guess_board = Array.new(@game.word_length, " _ ")
+    pp @guess_board
     @stock = draw_stock
   end
 
