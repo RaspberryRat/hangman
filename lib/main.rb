@@ -5,7 +5,7 @@ require "pp"
 # game logic class
 class Game
   def initialize
-    @round_number = 1
+    @round_number = 0
     @secret_word = select_word
     puts @secret_word
     @player1 = HumanPlayer.new(self)
@@ -13,16 +13,18 @@ class Game
     game_turn
   end
 
+  attr_reader :round_number
+
   def game_turn
-    while @round_number < 7
-      if @round_number == 6
+    while round_number < 5
+      if round_number == 4
         puts "game_over_loser"
         return
       else
+        @hangman.draw_stock
+        @hangman.display_correct_letters
         guess = @player1.guess_letter
         check_guess(guess)
-        @round_number += 1
-        # todo round number shouldnt increase, only with wrong numbers
       end
     end
   end
@@ -60,7 +62,13 @@ class Game
     else
       # TODO  add hangman part
       puts "Wrong, letter: #{letter} is not in #{word}"
+      increase_round_number
+      @hangman.add_body_part
     end
+  end
+
+  def increase_round_number
+    @round_number += 1
   end
 
   def previously_used_guess(letter)
@@ -71,8 +79,6 @@ class Game
       @player1.save_guess(letter)
     end
   end
-
-
 end
 
 # drawing methods for the gameboar
@@ -80,10 +86,8 @@ class Hangman < Game
   def initialize(game)
     @game = game
     @board = { head: "O", body: " |", arms: "-|-", legs: "/ \\", empty: " "}
-    @current_board = [@board[:head], @board[:body], @board[:arms], @board[:legs]]
+    @current_board = [@board[:empty], @board[:empty], @board[:empty], @board[:empty]]
     @guess_board = Array.new(@game.word_length, " _ ")
-    @stock = draw_stock
-    display_guessed_letters
   end
 
   attr_reader :guess_board
@@ -98,13 +102,21 @@ class Hangman < Game
     update_guesses(letter, letter_index)
   end
 
-  protected
-
-  def draw_stock
-    print "     ____\n    |    |\n    |    #{@current_board[0]}\n    |   #{@current_board[2]}\n    |   #{@current_board[3]}\n    |\n    |\n    |    \n-----------\n"
+  def add_body_part
+    round_number = @game.round_number
+    case round_number
+    when 1 then @current_board[0] = @board[:head]
+    when 2 then @current_board[1] = @board[:body]
+    when 3 then @current_board[1] = @board[:arms]
+    when 4 then @current_board[2] = @board[:legs]
+    end
   end
 
-  def display_guessed_letters
+  def draw_stock
+    print "     ____\n    |    |\n    |    #{@current_board[0]}\n    |   #{@current_board[1]}\n    |   #{@current_board[2]}\n    |\n    |\n    |    \n-----------\n"
+  end
+
+  def display_correct_letters
     puts "\n#{guess_board.join(' ')}\n"
   end
 
