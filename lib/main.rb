@@ -74,9 +74,12 @@ class Hangman < Game
 
   def correct_guess(letter)
     # print out locations where letters match.
-    word = read_secret_word
-    puts "in correct guess : word: #{word}"
- # TODO add to correct guessed
+    word = @game.read_secret_word.split("")
+    letter_index = []
+    word.each_with_index do |l, index|
+      letter_index.push(index) if letter == l
+    end
+    puts letter_index
   end
 
   protected
