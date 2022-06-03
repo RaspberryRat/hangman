@@ -14,11 +14,16 @@ class Game
   end
 
   def game_turn
-    if @round_number == 6
-      puts "game_over_loser"
-    else
-      guess = @player1.guess_letter
-      check_guess(guess)
+    while @round_number < 7
+      if @round_number == 6
+        puts "game_over_loser"
+        return
+      else
+        guess = @player1.guess_letter
+        check_guess(guess)
+        @round_number += 1
+        # todo round number shouldnt increase, only with wrong numbers
+      end
     end
   end
 
@@ -47,16 +52,27 @@ class Game
   def check_guess(letter)
     word = read_secret_word
     correct_letter = word.include?(letter)
-    # TODO if letter previously guessed, don't allow
+    # untested, need turn logic
+    return game_turn if previously_used_guess(letter) == false
     if correct_letter
       @hangman.correct_guess(letter)
-      @player1.save_guess(letter)
       puts "Letter #{letter} is in #{word}"
     else
-      # TODO  add letter to array of previously guessed letters
+      # TODO  add hangman part
       puts "Wrong, letter: #{letter} is not in #{word}"
     end
   end
+
+  def previously_used_guess(letter)
+    if @player1.used_letters.include?(letter)
+      puts "You have already guessed letter: #{letter}\n"
+      return true
+    else
+      @player1.save_guess(letter)
+    end
+  end
+
+
 end
 
 # drawing methods for the gameboar
@@ -100,10 +116,7 @@ class Hangman < Game
       guess_board[index_array[i]] = letter
       i += 1
     end
-    display_guessed_letters
   end
-
-  
 end
 
 # humanplayer and computerplayer superclass
@@ -119,7 +132,10 @@ class HumanPlayer < Players
     super
     puts "What is your name?"
     @name = gets.chomp
+    @used_letters = []
   end
+
+  attr_reader :used_letters
 
   def guess_letter
     puts "Guess a letter\n"
@@ -132,7 +148,11 @@ class HumanPlayer < Players
   end
 
   def save_guess(letter)
-    # TODO save previous feedback
+    if used_letters.include?(letter)
+      return
+    else
+      used_letters.push(letter)
+    end
   end
 end
 
