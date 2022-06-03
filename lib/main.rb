@@ -17,9 +17,10 @@ class Game
 
   def game_turn
     while round_number < 8
+    check_for_win
       if round_number == 6
         @hangman.draw_stock
-        puts "game_over_loser"
+        game_over_loser
         return
       else
         @hangman.draw_stock
@@ -55,7 +56,6 @@ class Game
   def check_guess(letter)
     word = read_secret_word
     correct_letter = word.include?(letter)
-    # untested, need turn logic
     return game_turn if previously_used_guess(letter) == false
     if correct_letter
       @hangman.correct_guess(letter)
@@ -79,6 +79,35 @@ class Game
     else
       @player1.save_guess(letter)
     end
+  end
+
+  def check_for_win
+    word = @secret_word
+    guessed_word = @hangman.guess_board.join('')
+    game_over_winner if guessed_word == word
+  end
+
+  def game_over_winner
+    @hangman.display_correct_letters
+    puts "You win!"
+    new_game
+  end
+
+  def game_over_loser
+    puts "You lost the game... you failed to guess the word: #{@secret_word}"
+    new_game
+  end
+
+  def new_game
+    puts "\n\nHello, would you like to play a new game of Hangman? (yes/no)?"
+    answer = gets.chomp
+
+    until %w[yes no].include?(answer)
+      puts "\nWould you like to play a new game of Mastermind? (yes/no)?"
+      answer = gets.chomp
+    end
+
+    answer == "yes" ? Game.new : exit
   end
 end
 
