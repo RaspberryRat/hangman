@@ -16,8 +16,9 @@ class Game
   attr_reader :round_number
 
   def game_turn
-    while round_number < 5
-      if round_number == 4
+    while round_number < 8
+      if round_number == 6
+        @hangman.draw_stock
         puts "game_over_loser"
         return
       else
@@ -85,7 +86,7 @@ end
 class Hangman < Game
   def initialize(game)
     @game = game
-    @board = { head: "O", body: " |", arms: "-|-", legs: "/ \\", empty: " "}
+    @board = { head: "O", body: " |", left_arm: "-|", arms: "-|-", left_leg: "/", legs: "/ \\", empty: " "}
     @current_board = [@board[:empty], @board[:empty], @board[:empty], @board[:empty]]
     @guess_board = Array.new(@game.word_length, " _ ")
   end
@@ -107,8 +108,10 @@ class Hangman < Game
     case round_number
     when 1 then @current_board[0] = @board[:head]
     when 2 then @current_board[1] = @board[:body]
-    when 3 then @current_board[1] = @board[:arms]
-    when 4 then @current_board[2] = @board[:legs]
+    when 3 then @current_board[1] = @board[:left_arm]
+    when 4 then @current_board[1] = @board[:arms]
+    when 5 then @current_board[2] = @board[:left_leg]
+    when 6 then @current_board[2] = @board[:legs]
     end
   end
 
