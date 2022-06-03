@@ -9,7 +9,7 @@ class Game
     @secret_word = select_word
     puts @secret_word
     @player1 = HumanPlayer.new(self)
-    Hangman.new(self)
+    @hangman = Hangman.new(self)
     game_turn
   end
 
@@ -46,24 +46,37 @@ class Game
 
   def check_guess(letter)
     word = read_secret_word
-    x = word.include?(letter)
-    if x == true
-      puts "Letter #{letter} is in #{word}" 
+    correct_letter = word.include?(letter)
+    # TODO if letter previously guessed, don't allow
+    if correct_letter
+      @hangman.correct_guess(letter)
+      @player1.save_guess(letter)
+      puts "Letter #{letter} is in #{word}"
     else
+      # TODO  add letter to array of previously guessed letters
       puts "Wrong, letter: #{letter} is not in #{word}"
     end
   end
 end
 
 # drawing methods for the gameboar
-class Hangman
+class Hangman < Game
   def initialize(game)
     @game = game
-    @board = {head: "O", body: " |", arms: "-|-", legs: "/ \\", empty: " "}
+    @board = { head: "O", body: " |", arms: "-|-", legs: "/ \\", empty: " "}
     @current_board = [@board[:head], @board[:body], @board[:arms], @board[:legs]]
     @guess_board = Array.new(@game.word_length, " _ ")
-    pp @guess_board
     @stock = draw_stock
+    display_guessed_letters
+  end
+
+  attr_reader :guess_board
+
+  def correct_guess(letter)
+    # print out locations where letters match.
+    word = read_secret_word
+    puts "in correct guess : word: #{word}"
+ # TODO add to correct guessed
   end
 
   protected
@@ -71,6 +84,12 @@ class Hangman
   def draw_stock
     print "     ____\n    |    |\n    |    #{@current_board[0]}\n    |   #{@current_board[2]}\n    |   #{@current_board[3]}\n    |\n    |\n    |    \n-----------\n"
   end
+
+  def display_guessed_letters
+    puts "#{guess_board.join(' ')}\n"
+  end
+
+  
 end
 
 # humanplayer and computerplayer superclass
@@ -96,6 +115,10 @@ class HumanPlayer < Players
       guess = gets.chomp.downcase.strip
     end
     guess
+  end
+
+  def save_guess(letter)
+    # TODO save previous feedback
   end
 end
 
