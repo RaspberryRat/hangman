@@ -79,7 +79,7 @@ class Hangman < Game
     word.each_with_index do |l, index|
       letter_index.push(index) if letter == l
     end
-    puts letter_index
+    update_guesses(letter, letter_index)
   end
 
   protected
@@ -89,7 +89,18 @@ class Hangman < Game
   end
 
   def display_guessed_letters
-    puts "#{guess_board.join(' ')}\n"
+    puts "\n#{guess_board.join(' ')}\n"
+  end
+
+  private
+
+  def update_guesses(letter, index_array)
+    i = 0
+    index_array.length.times do
+      guess_board[index_array[i]] = letter
+      i += 1
+    end
+    display_guessed_letters
   end
 
   
