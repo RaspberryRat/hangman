@@ -21,6 +21,7 @@ class Game
       else
         @hangman.draw_stock
         @hangman.display_correct_letters
+        puts "Type 'save' to save your game."
         guess = @player1.guess_letter
         check_guess(guess)
       end
@@ -33,6 +34,10 @@ class Game
 
   def read_secret_word
     @secret_word
+  end
+
+  def save_game
+    puts "GAME SAVED!"
   end
 
   private
@@ -173,9 +178,11 @@ class Player
   def guess_letter
     puts "\nGuess a letter:\n"
     guess = gets.chomp.downcase.strip
+    @game.save_game if guess == "save"
     until guess.length == 1 && guess.match?(/[a-z]/)
       puts "You can only enter a single letter"
       guess = gets.chomp.downcase.strip
+      @game.save_game if guess == "save"
     end
     guess
   end
