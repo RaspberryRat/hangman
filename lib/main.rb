@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require "pry-byebug"
+require 'json'
 
 # game logic class
 class Game
@@ -38,6 +39,7 @@ class Game
 
   def save_game
     puts "GAME SAVED!"
+    to_json
   end
 
   private
@@ -109,6 +111,22 @@ class Game
 
     answer == "yes" ? Game.new : exit
   end
+
+  def to_json
+    # TODO this seems to do something, but where does it save?
+    JSON.dump ({
+      :round_number => @round_number,
+      :secret_word => @secret_word,
+      :player1 => @player1,
+      :hangman => @hangman,
+    })
+  end
+
+  def self.from_json(string)
+    data = JSON.load string
+    self.new(data['round_number'], data['secret_word'], data['player1'], data['hangman'])
+  end
+
 end
 
 # drawing methods for the gameboar
