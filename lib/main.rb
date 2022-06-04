@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 require "pry-byebug"
-require "pp"
 
 # game logic class
 class Game
   def initialize
     @round_number = 0
     @secret_word = select_word
-    puts @secret_word
-    @player1 = HumanPlayer.new(self)
+    @player1 = Player.new(self)
     @hangman = Hangman.new(self)
     game_turn
   end
@@ -17,11 +15,9 @@ class Game
 
   def game_turn
     while round_number < 8
-    check_for_win
+      check_for_win
       if round_number == 6
-        @hangman.draw_stock
         game_over_loser
-        return
       else
         @hangman.draw_stock
         @hangman.display_correct_letters
@@ -34,8 +30,6 @@ class Game
   def word_length
     read_secret_word.length
   end
-
-  protected
 
   def read_secret_word
     @secret_word
@@ -57,12 +51,12 @@ class Game
     word = read_secret_word
     correct_letter = word.include?(letter)
     return game_turn if previously_used_guess(letter) == false
+
     if correct_letter
       @hangman.correct_guess(letter)
-      puts "Letter #{letter} is in #{word}"
+      puts "Correct! Letter #{letter} is in the secret word."
     else
-      # TODO  add hangman part
-      puts "Wrong, letter: #{letter} is not in #{word}"
+      puts "Wrong, letter: #{letter} is not in the secret word."
       increase_round_number
       @hangman.add_body_part
     end
@@ -75,7 +69,7 @@ class Game
   def previously_used_guess(letter)
     if @player1.used_letters.include?(letter)
       puts "You have already guessed letter: #{letter}\n"
-      return true
+      true
     else
       @player1.save_guess(letter)
     end
@@ -94,6 +88,7 @@ class Game
   end
 
   def game_over_loser
+    @hangman.draw_stock
     puts "You lost the game... you failed to guess the word: #{@secret_word}"
     new_game
   end
@@ -112,10 +107,10 @@ class Game
 end
 
 # drawing methods for the gameboar
-class Hangman < Game
+class Hangman
   def initialize(game)
     @game = game
-    @board = { head: "O", body: " |", left_arm: "-|", arms: "-|-", left_leg: "/", legs: "/ \\", empty: " "}
+    @board = { head: "O", body: " |", left_arm: "-|", arms: "-|-", left_leg: "/", legs: "/ \\", empty: " " }
     @current_board = [@board[:empty], @board[:empty], @board[:empty], @board[:empty]]
     @guess_board = Array.new(@game.word_length, " _ ")
   end
@@ -163,17 +158,11 @@ class Hangman < Game
   end
 end
 
-# humanplayer and computerplayer superclass
-class Players
-  def initialize(game)
-    @game = game
-  end
-end
 
 # methods for human player, the guesser
-class HumanPlayer < Players
-  def initialize(name)
-    super
+class Player
+  def initialize(game)
+    @game = game
     puts "What is your name?"
     @name = gets.chomp
     @used_letters = []
@@ -182,7 +171,7 @@ class HumanPlayer < Players
   attr_reader :used_letters
 
   def guess_letter
-    puts "Guess a letter\n"
+    puts "\nGuess a letter:\n"
     guess = gets.chomp.downcase.strip
     until guess.length == 1 && guess.match?(/[a-z]/)
       puts "You can only enter a single letter"
@@ -192,18 +181,9 @@ class HumanPlayer < Players
   end
 
   def save_guess(letter)
-    if used_letters.include?(letter)
-      return
-    else
-      used_letters.push(letter)
-    end
+    used_letters.include?(letter) ? return : used_letters.push(letter)
   end
 end
 
-# methods for computer player
-class ComputerPlayer < Players
-end
 
-
-puts "Hangman Initialized!"
 Game.new
