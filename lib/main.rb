@@ -5,11 +5,15 @@ require 'json'
 # game logic class
 class Game
   def initialize
-    @round_number = 0
-    @secret_word = select_word
-    @player1 = Player.new(self)
-    @hangman = Hangman.new(self)
-    game_turn
+    if load?
+      Game.from_json("game")
+    else
+      @round_number = 0
+      @secret_word = select_word
+      @player1 = Player.new(self)
+      @hangman = Hangman.new(self)
+      game_turn
+    end
   end
 
   attr_reader :round_number
@@ -43,6 +47,12 @@ class Game
   end
 
   private
+
+  def load?
+    puts "Would you like to load a previous game? (yes/no)"
+    answer = gets.chomp.strip.downcase
+    answer == "yes" ? true : false
+  end
 
   def select_word
     words = []
@@ -105,7 +115,7 @@ class Game
     answer = gets.chomp
 
     until %w[yes no].include?(answer)
-      puts "\nWould you like to play a new game of Mastermind? (yes/no)?"
+      puts "\nWould you like to play a new game of Hangman? (yes/no)?"
       answer = gets.chomp
     end
 
@@ -113,17 +123,20 @@ class Game
   end
 
   def to_json
-    # TODO this seems to do something, but where does it save?
-    JSON.dump ({
+    game_save = JSON.dump ({
       :round_number => @round_number,
       :secret_word => @secret_word,
       :player1 => @player1,
       :hangman => @hangman,
     })
+    save = File.open("hangman_save.txt", "w")
+    save.puts game_save
+    save.close
+    
   end
 
-  def self.from_json(string)
-    data = JSON.load string
+  def self.from_json
+    data = JSON.load "hangman.txt"
     self.new(data['round_number'], data['secret_word'], data['player1'], data['hangman'])
   end
 
