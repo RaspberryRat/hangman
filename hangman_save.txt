@@ -1,1 +1,1 @@
-{"round_number":5,"secret_word":"recover","player1":"#<Player:0x0000000108d20f88>","hangman":"#<Hangman:0x0000000108d20d80>"}
+{"round_number":4,"secret_word":"device","player1":"#<Player:0x00000001047a7970>","hangman":"#<Hangman:0x00000001047a77b8>"}

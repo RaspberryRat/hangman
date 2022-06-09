@@ -6,7 +6,7 @@ require 'json'
 class Game
   def initialize
     if load?
-      Game.from_json("game")
+      Game.from_json
     else
       @round_number = 0
       @secret_word = select_word
@@ -136,7 +136,9 @@ class Game
   end
 
   def self.from_json
-    data = JSON.load "hangman.txt"
+    # TODO need to figure out how to load JSON 
+    string = File.read("hangman_save.txt")
+    data = JSON.load string
     self.new(data['round_number'], data['secret_word'], data['player1'], data['hangman'])
   end
 
