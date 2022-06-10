@@ -243,6 +243,11 @@ class Hangman
 
   def display_correct_letters
     puts "\n#{guess_board.join(' ')}\n"
+    display_guessed_letters
+  end
+
+  def display_guessed_letters
+    print "\nUsed letters: #{@game.used_letters.join(", ")}\n"
   end
 
   def load_game(current_board, guess_board)
