@@ -1,37 +1,20 @@
 # frozen_string_literal: true
 require "pry-byebug"
-require 'json'
+require "json"
 
 # game logic class
 class Game
   def initialize
-    if load?
-      Game.from_json
-    else
-      @round_number = 0
-      @secret_word = select_word
-      @player1 = Player.new(self)
-      @hangman = Hangman.new(self)
-      game_turn
-    end
+    puts "What is your name?"
+    @name = gets.chomp
+    @used_letters = []
+    @round_number = 0
+    @secret_word = select_word
+    @hangman = Hangman.new(self)
+    game_turn
   end
 
-  attr_reader :round_number
-
-  def game_turn
-    while round_number < 8
-      check_for_win
-      if round_number == 6
-        game_over_loser
-      else
-        @hangman.draw_stock
-        @hangman.display_correct_letters
-        puts "Type 'save' to save your game."
-        guess = @player1.guess_letter
-        check_guess(guess)
-      end
-    end
-  end
+  attr_reader :round_number, :secret_word, :used_letters
 
   def word_length
     read_secret_word.length
@@ -47,6 +30,36 @@ class Game
   end
 
   private
+
+  def save_guess(letter)
+    used_letters.include?(letter) ? return : used_letters.push(letter)
+  end
+  def game_turn
+    while round_number < 8
+      check_for_win
+      if round_number == 6
+        game_over_loser
+      else
+        @hangman.draw_stock
+        @hangman.display_correct_letters
+        puts "Type 'save' to save your game."
+        guess = guess_letter
+        check_guess(guess)
+      end
+    end
+  end
+
+  def guess_letter
+    puts "\nGuess a letter:\n"
+    guess = gets.chomp.downcase.strip
+    save_game if guess == "save"
+    until guess.length == 1 && guess.match?(/[a-z]/)
+      puts "You can only enter a single letter"
+      guess = gets.chomp.downcase.strip
+      save_game if guess == "save"
+    end
+    guess
+  end
 
   def load?
     puts "Would you like to load a previous game? (yes/no)"
@@ -84,11 +97,11 @@ class Game
   end
 
   def previously_used_guess(letter)
-    if @player1.used_letters.include?(letter)
+    if used_letters.include?(letter)
       puts "You have already guessed letter: #{letter}\n"
       true
     else
-      @player1.save_guess(letter)
+      save_guess(letter)
     end
   end
 
@@ -126,7 +139,6 @@ class Game
     game_save = JSON.dump ({
       :round_number => @round_number,
       :secret_word => @secret_word,
-      :player1 => @player1,
       :hangman => @hangman,
     })
     save = File.open("hangman_save.txt", "w")
@@ -136,10 +148,8 @@ class Game
   end
 
   def self.from_json
-    # TODO need to figure out how to load JSON 
-    string = File.read("hangman_save.txt")
-    data = JSON.load string
-    self.new(data['round_number'], data['secret_word'], data['player1'], data['hangman'])
+    data = JSON.load File.read("hangman_save.txt")
+     self.new(data['round_number'], data['secret_word'], data['player1'], data['hangman'])
   end
 
 end
@@ -195,35 +205,5 @@ class Hangman
     end
   end
 end
-
-
-# methods for human player, the guesser
-class Player
-  def initialize(game)
-    @game = game
-    puts "What is your name?"
-    @name = gets.chomp
-    @used_letters = []
-  end
-
-  attr_reader :used_letters
-
-  def guess_letter
-    puts "\nGuess a letter:\n"
-    guess = gets.chomp.downcase.strip
-    @game.save_game if guess == "save"
-    until guess.length == 1 && guess.match?(/[a-z]/)
-      puts "You can only enter a single letter"
-      guess = gets.chomp.downcase.strip
-      @game.save_game if guess == "save"
-    end
-    guess
-  end
-
-  def save_guess(letter)
-    used_letters.include?(letter) ? return : used_letters.push(letter)
-  end
-end
-
 
 Game.new
