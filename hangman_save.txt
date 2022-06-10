@@ -1,1 +1,0 @@
-{"round_number":3,"secret_word":"royalty","used_letters":["p","l","f","a"],"current_board":["O","-|"," "," "],"guess_board":[" _ "," _ "," _ ","a","l"," _ "," _ "]}

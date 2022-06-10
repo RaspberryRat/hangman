@@ -138,7 +138,7 @@ class Game
       :current_board => @hangman.current_board,
       :guess_board => @hangman.guess_board
     })
-    save = File.open("hangman_save.txt", "w")
+    save = File.open("./saves/hangman_save.txt", "w")
     save.puts game_save
     save.close
     end_game
@@ -146,7 +146,7 @@ class Game
   end
 
   def from_json
-    save_file = File.read("hangman_save.txt")
+    save_file = File.read("./saves/hangman_save.txt")
     save_data = JSON.parse(save_file)
     # secret_word is being added to round_number for some reason
     @round_number = save_data['round_number'] 
