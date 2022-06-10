@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require "pry-byebug"
 require "json"
 
 # game logic class
@@ -123,14 +122,11 @@ class Game
   end
 
   def new_game
-    puts "\n\nHello, would you like to play a new game of Hangman? (yes/no)?"
-    answer = gets.chomp
-
+    answer = ""
     until %w[yes no].include?(answer)
       puts "\nWould you like to play a new game of Hangman? (yes/no)?"
-      answer = gets.chomp
+      answer = gets.chomp.downcase.strip
     end
-
     answer == "yes" ? Game.new : exit
   end
 
