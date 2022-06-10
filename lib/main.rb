@@ -5,8 +5,6 @@ require "json"
 # game logic class
 class Game
   def initialize
-    puts "What is your name?"
-    @name = gets.chomp
     @used_letters = []
     @round_number = 0
     @secret_word = select_word
