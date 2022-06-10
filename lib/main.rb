@@ -186,9 +186,9 @@ class Game
     draw_break
     puts "You have to guess the a 5-12 letter word.\n"
     sleep(0.7)
-    puts "You have 5 wrong guesses\n" 
+    puts "You have 5 wrong guesses.\n" 
     sleep(0.7)
-    puts "When you're man is fully on the stocks, you lose!\n"
+    puts "When you're fully on the stocks, you lose!\n"
     sleep(0.7)
     draw_break
     @hangman.welcome_screen
