@@ -8,6 +8,7 @@ class Game
     @round_number = 0
     @secret_word = select_word
     @hangman = Hangman.new(self)
+    draw_welcome
     load_game
     game_turn
   end
@@ -23,6 +24,11 @@ class Game
   end
 
   def save_game
+    puts "\n"
+    3.times do
+      print "."
+      sleep(0.3)
+    end
     puts "GAME SAVED!"
     to_json
   end
@@ -38,10 +44,14 @@ class Game
       if round_number == 6
         game_over_loser
       else
+        sleep(0.3)
         @hangman.draw_stock
+        sleep(0.3)
         @hangman.display_correct_letters
         puts "Type 'save' to save your game."
+        sleep(0.3)
         guess = guess_letter
+        sleep(0.3)
         check_guess(guess)
       end
     end
@@ -146,6 +156,12 @@ class Game
   end
 
   def from_json
+    3.times do
+      print "."
+      sleep(0.3)
+    end
+    puts "Game loaded!\n\n"
+
     save_file = File.read("./saves/hangman_save.txt")
     save_data = JSON.parse(save_file)
     # secret_word is being added to round_number for some reason
@@ -157,11 +173,34 @@ class Game
 
   def end_game
     answer = ""
+    sleep(0.3)
     until %w[yes no].include?(answer)
       puts "Your game was saved.\nDo you want to end the game? (yes/no)"
       answer = gets.chomp.strip.downcase
     end
     answer == "yes" ? exit : return
+  end
+  
+  def draw_welcome
+    puts "WELCOME TO HANGMAN"
+    draw_break
+    puts "You have to guess the a 5-12 letter word.\n"
+    sleep(0.7)
+    puts "You have 5 wrong guesses\n" 
+    sleep(0.7)
+    puts "When you're man is fully on the stocks, you lose!\n"
+    sleep(0.7)
+    draw_break
+    @hangman.welcome_screen
+    sleep(0.3)
+    draw_break
+  end
+  
+  def draw_break
+    3.times do
+      puts "*********************"
+      sleep(0.5)
+    end
   end
 end
 
@@ -210,6 +249,13 @@ class Hangman
     @current_board = current_board
     @guess_board = guess_board
   end
+
+  def welcome_screen
+    puts "Don't end up like this!"
+    sleep(1)
+    print "     ____\n    |    |\n    |    #{@board[:head]}\n    |   #{@board[:arms]}\n    |   #{@board[:legs]}\n    |\n    |\n    |    \n-----------\n"
+  end
+
 
   private
 

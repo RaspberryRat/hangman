@@ -1,1 +1,1 @@
-{"round_number":5,"secret_word":"commodity","used_letters":["f","s","a","e","l","o"],"current_board":["O","-|-","/"," "],"guess_board":[" _ ","o"," _ "," _ ","o"," _ "," _ "," _ "," _ "]}
+{"round_number":0,"secret_word":"cornell","used_letters":[],"current_board":[" "," "," "," "],"guess_board":[" _ "," _ "," _ "," _ "," _ "," _ "," _ "]}
