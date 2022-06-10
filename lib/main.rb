@@ -152,15 +152,13 @@ class Game
   end
 
   def from_json
-    binding.pry
     save_file = File.read("hangman_save.txt")
     save_data = JSON.parse(save_file)
     # secret_word is being added to round_number for some reason
     @round_number = save_data['round_number'] 
     @secret_word = save_data['secret_word']
     @used_letters = save_data['used_letters']
-    @hangman.current_board = save_data['current_board']
-    @hangman.guess_board = save_data['guess_board']
+    @hangman.load_game(save_data['current_board'], save_data['guess_board'] )
   end
 
   def end_game
@@ -212,6 +210,11 @@ class Hangman
 
   def display_correct_letters
     puts "\n#{guess_board.join(' ')}\n"
+  end
+
+  def load_game(current_board, guess_board)
+    @current_board = current_board
+    @guess_board = guess_board
   end
 
   private
