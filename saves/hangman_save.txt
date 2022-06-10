@@ -1,1 +1,1 @@
-{"round_number":1,"secret_word":"anytime","used_letters":["e","f","m"],"current_board":["O"," "," "," "],"guess_board":[" _ "," _ "," _ "," _ "," _ ","m","e"]}
+{"round_number":2,"secret_word":"sydney","used_letters":["f","d","a"],"current_board":["O"," |"," "," "],"guess_board":[" _ "," _ ","d"," _ "," _ "," _ "]}

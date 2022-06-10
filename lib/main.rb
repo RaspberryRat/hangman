@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "json"
 
 # game logic class
@@ -38,22 +39,17 @@ class Game
   def save_guess(letter)
     used_letters.include?(letter) ? return : used_letters.push(letter)
   end
+
   def game_turn
     while round_number < 8
       check_for_win
-      if round_number == 6
-        game_over_loser
-      else
-        sleep(0.3)
-        @hangman.draw_stock
-        sleep(0.3)
-        @hangman.display_correct_letters
-        puts "Type 'save' to save your game."
-        sleep(0.3)
-        guess = guess_letter
-        sleep(0.3)
-        check_guess(guess)
-      end
+      return game_over_loser if round_number == 6
+
+      @hangman.draw_stock
+      @hangman.display_correct_letters
+      puts "Type 'save' to save your game."
+      guess = guess_letter
+      check_guess(guess)
     end
   end
 
@@ -78,16 +74,14 @@ class Game
   def select_word
     words = []
     File.open("dictionary.txt").readlines.each { |word| words.push(word) }
-    word = words.sample.chomp
-    until word.length < 12 && word.length > 5
-      word = words.sample.chomp
-    end
+    word = ""
+    word = words.sample.chomp until word.length < 12 && word.length > 5
     word
   end
 
   def check_guess(letter)
-    word = read_secret_word
-    correct_letter = word.include?(letter)
+    sleep(0.2)
+    correct_letter = read_secret_word.include?(letter)
     return game_turn if previously_used_guess(letter) == false
 
     if correct_letter
@@ -126,6 +120,7 @@ class Game
   end
 
   def game_over_loser
+    sleep(0.2)
     @hangman.draw_stock
     puts "You lost the game... you failed to guess the word: #{@secret_word}"
     new_game
@@ -152,7 +147,6 @@ class Game
     save.puts game_save
     save.close
     end_game
-    
   end
 
   def from_json
@@ -164,11 +158,10 @@ class Game
 
     save_file = File.read("./saves/hangman_save.txt")
     save_data = JSON.parse(save_file)
-    # secret_word is being added to round_number for some reason
-    @round_number = save_data['round_number'] 
+    @round_number = save_data['round_number']
     @secret_word = save_data['secret_word']
     @used_letters = save_data['used_letters']
-    @hangman.load_game(save_data['current_board'], save_data['guess_board'] )
+    @hangman.load_game(save_data['current_board'], save_data['guess_board'])
   end
 
   def end_game
@@ -180,22 +173,22 @@ class Game
     end
     answer == "yes" ? exit : return
   end
-  
+
   def draw_welcome
     puts "WELCOME TO HANGMAN"
     draw_break
     puts "You have to guess the a 5-12 letter word.\n"
-    sleep(0.7)
-    puts "You have 5 wrong guesses.\n" 
-    sleep(0.7)
+    sleep(0.5)
+    puts "You have 5 wrong guesses.\n"
+    sleep(0.5)
     puts "When you're fully on the stocks, you lose!\n"
-    sleep(0.7)
+    sleep(0.5)
     draw_break
     @hangman.welcome_screen
-    sleep(0.3)
+    sleep(0.2)
     draw_break
   end
-  
+
   def draw_break
     3.times do
       puts "*********************"
@@ -242,12 +235,13 @@ class Hangman
   end
 
   def display_correct_letters
+    sleep(0.2)
     puts "\n#{guess_board.join(' ')}\n"
     display_guessed_letters
   end
 
   def display_guessed_letters
-    print "\nUsed letters: #{@game.used_letters.join(", ")}\n"
+    print "\nUsed letters: #{@game.used_letters.join(', ')}\n"
   end
 
   def load_game(current_board, guess_board)
@@ -260,7 +254,6 @@ class Hangman
     sleep(1)
     print "     ____\n    |    |\n    |    #{@board[:head]}\n    |   #{@board[:arms]}\n    |   #{@board[:legs]}\n    |\n    |\n    |    \n-----------\n"
   end
-
 
   private
 
