@@ -11,6 +11,7 @@ class Game
     @round_number = 0
     @secret_word = select_word
     @hangman = Hangman.new(self)
+    load_game
     game_turn
   end
 
@@ -61,10 +62,10 @@ class Game
     guess
   end
 
-  def load?
+  def load_game
     puts "Would you like to load a previous game? (yes/no)"
     answer = gets.chomp.strip.downcase
-    answer == "yes" ? true : false
+    answer == "yes" ? from_json : false
   end
 
   def select_word
@@ -139,19 +140,37 @@ class Game
     game_save = JSON.dump ({
       :round_number => @round_number,
       :secret_word => @secret_word,
-      :hangman => @hangman,
+      :used_letters => @used_letters,
+      :current_board => @hangman.current_board,
+      :guess_board => @hangman.guess_board
     })
     save = File.open("hangman_save.txt", "w")
     save.puts game_save
     save.close
+    end_game
     
   end
 
-  def self.from_json
-    data = JSON.load File.read("hangman_save.txt")
-     self.new(data['round_number'], data['secret_word'], data['player1'], data['hangman'])
+  def from_json
+    binding.pry
+    save_file = File.read("hangman_save.txt")
+    save_data = JSON.parse(save_file)
+    # secret_word is being added to round_number for some reason
+    @round_number = save_data['round_number'] 
+    @secret_word = save_data['secret_word']
+    @used_letters = save_data['used_letters']
+    @hangman.current_board = save_data['current_board']
+    @hangman.guess_board = save_data['guess_board']
   end
 
+  def end_game
+    answer = ""
+    until %w[yes no].include?(answer)
+      puts "Your game was saved.\nDo you want to end the game? (yes/no)"
+      answer = gets.chomp.strip.downcase
+    end
+    answer == "yes" ? exit : return
+  end
 end
 
 # drawing methods for the gameboar
@@ -163,7 +182,7 @@ class Hangman
     @guess_board = Array.new(@game.word_length, " _ ")
   end
 
-  attr_reader :guess_board
+  attr_reader :guess_board, :current_board
 
   def correct_guess(letter)
     # print out locations where letters match.
